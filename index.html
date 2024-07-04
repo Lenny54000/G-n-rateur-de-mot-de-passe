@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de mot de passe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        h1 {
+            color: #333;
+        }
+        #password {
+            font-size: 24px;
+            margin-bottom: 10px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: center;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        form {
+            display: none; /* Masquer le formulaire */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Générateur de mot de passe</h1>
+        <div id="password"></div>
+        <div>
+            <button onclick="generatePassword()">Générer</button>
+            <button onclick="copyToClipboard()">Copier</button>
+        </div>
+        <form id="password-form">
+            <input type="text" id="username" name="username" placeholder="Nom d'utilisateur" autocomplete="username">
+            <input type="password" id="generated-password" name="new-password" placeholder="Mot de passe" autocomplete="new-password">
+            <button type="submit">Soumettre</button>
+        </form>
+    </div>
+    <script>
+        let generatedPassword = '';
+
+        function generatePassword() {
+            const upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lowerCase = 'abcdefghijklmnopqrstuvwxyz';
+            const numbers = '0123456789';
+            const specialChars = '!@#$%^&*()_+{}:"<>?|[];\',./`~';
+            const allChars = upperCase + lowerCase + numbers + specialChars;
+
+            const passwordLength = Math.floor(Math.random() * 11) + 10; // Longueur entre 10 et 20 caractères
+            generatedPassword = '';
+            for (let i = 0; i < passwordLength; i++) {
+                const randomIndex = Math.floor(Math.random() * allChars.length);
+                generatedPassword += allChars[randomIndex];
+            }
+
+            const passwordField = document.getElementById('password');
+            passwordField.innerHTML = ''; // Réinitialiser le contenu
+
+            let currentIndex = 0;
+
+            function updatePassword() {
+                if (currentIndex < generatedPassword.length) {
+                    const tempPassword = passwordField.innerHTML.split('');
+                    for (let i = currentIndex; i < generatedPassword.length; i++) {
+                        tempPassword[i] = allChars[Math.floor(Math.random() * allChars.length)];
+                    }
+                    passwordField.innerHTML = tempPassword.join('');
+                    currentIndex++;
+                } else {
+                    passwordField.innerHTML = generatedPassword;
+                    clearInterval(interval);
+                }
+            }
+
+            const interval = setInterval(updatePassword, 100);
+        }
+
+        function copyToClipboard() {
+            const passwordField = document.getElementById('password');
+            const textArea = document.createElement('textarea');
+            textArea.value = passwordField.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('Mot de passe copié dans le presse-papier !');
+            
+            // Simuler la soumission du formulaire pour déclencher l'enregistrement du mot de passe
+            document.getElementById('generated-password').value = generatedPassword;
+            document.getElementById('password-form').submit();
+        }
+    </script>
+</body>
+</html>
